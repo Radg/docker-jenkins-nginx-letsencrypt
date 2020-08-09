@@ -5,9 +5,10 @@ services:
   jenkins:
     image: jenkins/jenkins:lts
     volumes:
-      - './jenkins_home:/var/jenkins_home'
+      - jenkins_data:/var/jenkins_home
     ports:
-      - "8080"
+      - 8080:8080
+    restart: always
 
   nginx:
     image: nginx
@@ -19,6 +20,7 @@ services:
       VIRTUAL_HOST: example.com
       LETSENCRYPT_HOST: example.com
       LETSENCRYPT_EMAIL: youremail@example.com
+    restart: always
 
   nginx-proxy:
     image: jwilder/nginx-proxy
@@ -30,6 +32,7 @@ services:
       - "./nginx/html:/usr/share/nginx/html"
       - "./nginx/certs:/etc/nginx/certs"
       - "/var/run/docker.sock:/tmp/docker.sock:ro"
+    restart: always
 
   letsencrypt-nginx-proxy-companion:
     image: jrcs/letsencrypt-nginx-proxy-companion
@@ -37,4 +40,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     volumes_from:
       - "nginx-proxy"
+    restart: always
 
+volumes:
+  jenkins_data:
